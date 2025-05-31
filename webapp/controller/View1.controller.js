@@ -112,6 +112,17 @@ sap.ui.define([
       });
     },
 ContinuarProceso: function () {
+
+            const toYYYYMMDD = function (date) {
+                if (!(date instanceof Date)) return "";
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}${month}${day}`;
+            };
+
+
+
   var oView = this.getView();
   var oTable = oView.byId("contratoTable");
   var aItems = oTable.getItems();
@@ -163,8 +174,8 @@ ContinuarProceso: function () {
       Usuario: Usuario,
       Ubicacion: Ubicacion,
       TextoBreve: TextoBreve,
-      PeriodoDesde: PeriodoDesde ? PeriodoDesde.toISOString() : "",
-      PeriodoHasta: PeriodoHasta ? PeriodoHasta.toISOString() : "",
+      PeriodoDesde: toYYYYMMDD(PeriodoDesde),
+      PeriodoHasta: toYYYYMMDD(PeriodoHasta),
       CuentaMayor: cuentaMayor,
       CentroCoste: centroCoste,
       OrdenInput: ordenInput,

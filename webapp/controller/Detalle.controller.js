@@ -238,54 +238,54 @@ sap.ui.define([
                 oContratoModel.refresh(true);
             }
         },
-         _habilitarInputOrdenSegunCentro: function (oRow) {
-      // Buscar el input Orden dentro de la misma fila
-      var oInputOrden = oRow.getCells().find(function (oCell) {
-        if (oCell instanceof sap.m.Input && oCell.getId().includes("Orden")) {
-          return true;
-        }
-        if (oCell instanceof sap.m.VBox) {
-          return oCell.getItems().some(function (oItem) {
-            return (oItem instanceof sap.m.Input) && oItem.getId().includes("Orden");
-          });
-        }
-        return false;
-      });
+        _habilitarInputOrdenSegunCentro: function (oRow) {
+            // Buscar el input Orden dentro de la misma fila
+            var oInputOrden = oRow.getCells().find(function (oCell) {
+                if (oCell instanceof sap.m.Input && oCell.getId().includes("Orden")) {
+                    return true;
+                }
+                if (oCell instanceof sap.m.VBox) {
+                    return oCell.getItems().some(function (oItem) {
+                        return (oItem instanceof sap.m.Input) && oItem.getId().includes("Orden");
+                    });
+                }
+                return false;
+            });
 
-      if (oInputOrden instanceof sap.m.VBox) {
-        oInputOrden = oInputOrden.getItems().find(function (oItem) {
-          return (oItem instanceof sap.m.Input) && oItem.getId().includes("Orden");
-        });
-      }
+            if (oInputOrden instanceof sap.m.VBox) {
+                oInputOrden = oInputOrden.getItems().find(function (oItem) {
+                    return (oItem instanceof sap.m.Input) && oItem.getId().includes("Orden");
+                });
+            }
 
-      if (!oInputOrden) return;
+            if (!oInputOrden) return;
 
-      var oInputCentro = oRow.getCells().find(function (oCell) {
-        if (oCell instanceof sap.m.VBox) {
-          return oCell.getItems().some(function (oItem) {
-            return (oItem instanceof sap.m.Input) && oItem.getId().includes("CentroCoste");
-          });
-        }
-        return false;
-      });
+            var oInputCentro = oRow.getCells().find(function (oCell) {
+                if (oCell instanceof sap.m.VBox) {
+                    return oCell.getItems().some(function (oItem) {
+                        return (oItem instanceof sap.m.Input) && oItem.getId().includes("CentroCoste");
+                    });
+                }
+                return false;
+            });
 
-      if (oInputCentro instanceof sap.m.VBox) {
-        oInputCentro = oInputCentro.getItems().find(function (oItem) {
-          return (oItem instanceof sap.m.Input) && oItem.getId().includes("CentroCoste");
-        });
-      }
+            if (oInputCentro instanceof sap.m.VBox) {
+                oInputCentro = oInputCentro.getItems().find(function (oItem) {
+                    return (oItem instanceof sap.m.Input) && oItem.getId().includes("CentroCoste");
+                });
+            }
 
-      if (!oInputCentro) return;
+            if (!oInputCentro) return;
 
-      if (oInputCentro.getValue().trim() !== "") {
-        oInputOrden.setValue("");
-        oInputOrden.setEnabled(false);
-        oInputOrden.addStyleClass("inputDisabledCustom");
-      } else {
-        oInputOrden.setEnabled(true);
-        oInputOrden.removeStyleClass("inputDisabledCustom");
-      }
-    },
+            if (oInputCentro.getValue().trim() !== "") {
+                oInputOrden.setValue("");
+                oInputOrden.setEnabled(false);
+                oInputOrden.addStyleClass("inputDisabledCustom");
+            } else {
+                oInputOrden.setEnabled(true);
+                oInputOrden.removeStyleClass("inputDisabledCustom");
+            }
+        },
 
         onValueHelpCentroCoste: function (oEvent) {
             const oView = this.getView();
@@ -318,61 +318,61 @@ sap.ui.define([
             });
         },
 
-     onCentroCosteSeleccionado: function (oEvent) {
-    const oSelectedItem = oEvent.getParameter("selectedItem");
-    if (oSelectedItem && this._oCentroCosteContext) {
-        const oData = oSelectedItem.getBindingContext("centroCosteModel").getObject();
-        const sCentro = oData.Centro;
+        onCentroCosteSeleccionado: function (oEvent) {
+            const oSelectedItem = oEvent.getParameter("selectedItem");
+            if (oSelectedItem && this._oCentroCosteContext) {
+                const oData = oSelectedItem.getBindingContext("centroCosteModel").getObject();
+                const sCentro = oData.Centro;
 
-        const oModel = this.getView().getModel("itemsModel");
-        oModel.setProperty(this._oCentroCosteContext.getPath() + "/CentroCoste", sCentro);
+                const oModel = this.getView().getModel("itemsModel");
+                oModel.setProperty(this._oCentroCosteContext.getPath() + "/CentroCoste", sCentro);
 
-        // Accedo al item de la tabla para deshabilitar input Orden si corresponde
-        const oTable = this.byId("idDetalleTable");
-        const aItems = oTable.getItems();
+                // Accedo al item de la tabla para deshabilitar input Orden si corresponde
+                const oTable = this.byId("idDetalleTable");
+                const aItems = oTable.getItems();
 
-        for (let i = 0; i < aItems.length; i++) {
-            const oCtx = aItems[i].getBindingContext("itemsModel");
-            if (oCtx && oCtx.getPath() === this._oCentroCosteContext.getPath()) {
-                this._habilitarInputOrdenSegunCentro(aItems[i]);
-                break;
+                for (let i = 0; i < aItems.length; i++) {
+                    const oCtx = aItems[i].getBindingContext("itemsModel");
+                    if (oCtx && oCtx.getPath() === this._oCentroCosteContext.getPath()) {
+                        this._habilitarInputOrdenSegunCentro(aItems[i]);
+                        break;
+                    }
+                }
+
+                this._oCentroCosteContext = null;
+
+                // Cerramos el dialog
+                this._oCentroCosteDialog.close();
             }
-        }
-
-        this._oCentroCosteContext = null;
-
-        // Cerramos el dialog
-        this._oCentroCosteDialog.close();
-    }
-},
+        },
 
         onCentroCosteChange: function (oEvent) {
-    const oInput = oEvent.getSource();
-    const sPath = oInput.getBindingContext("itemsModel").getPath();
-    const oModel = this.getView().getModel("itemsModel");
-    const oData = oModel.getProperty(sPath);
-    
-    const tieneCentroCoste = !!oData.CentroCoste;
+            const oInput = oEvent.getSource();
+            const sPath = oInput.getBindingContext("itemsModel").getPath();
+            const oModel = this.getView().getModel("itemsModel");
+            const oData = oModel.getProperty(sPath);
 
-    oModel.setProperty(sPath + "/OrdenEnabled", !tieneCentroCoste);
-},
+            const tieneCentroCoste = !!oData.CentroCoste;
 
-onOrdenChange: function (oEvent) {
-    const oInput = oEvent.getSource();
-    const sPath = oInput.getBindingContext("itemsModel").getPath();
-    const oModel = this.getView().getModel("itemsModel");
-    const oData = oModel.getProperty(sPath);
-    
-    const tieneOrden = !!oData.OrdenInput;
+            oModel.setProperty(sPath + "/OrdenEnabled", !tieneCentroCoste);
+        },
 
-    oModel.setProperty(sPath + "/CentroCosteEnabled", !tieneOrden);
-},
+        onOrdenChange: function (oEvent) {
+            const oInput = oEvent.getSource();
+            const sPath = oInput.getBindingContext("itemsModel").getPath();
+            const oModel = this.getView().getModel("itemsModel");
+            const oData = oModel.getProperty(sPath);
+
+            const tieneOrden = !!oData.OrdenInput;
+
+            oModel.setProperty(sPath + "/CentroCosteEnabled", !tieneOrden);
+        },
 
 
         onImporteNuevoChange: function (oEvent) {
 
             var oModelCast = this.getView().getModel("detalleModel").getData();
-     
+
             if (oModelCast.catAsig === "U") {
 
                 var bMostrar = !!sValor;
@@ -394,6 +394,7 @@ onOrdenChange: function (oEvent) {
         },
 
         onGuardarCM: function () {
+
             var oView = this.getView();
             var sCuentaMayor = oView.byId("inputCuentaMayor").getValue().trim();
             var sCentroBeneficio = oView.byId("inputCentroBeneficio").getValue().trim();
@@ -423,12 +424,28 @@ onOrdenChange: function (oEvent) {
         },
 
         onContinuePress: function () {
+
+            const toYYYYMMDD = function (date) {
+                if (!(date instanceof Date)) return "";
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}${month}${day}`;
+            };
+
+
+
             var oView = this.getView();
             var oModelUsuarios = this.getOwnerComponent().getModel("formData").getData();
-            var ModelFragment = this.getView().getModel("fragmentData").getData();
+            //var ModelFragment = this.getView().getModel("fragmentData").getData();
             var oTable = oView.byId("idDetalleTable");
             var aItems = oTable.getItems();
             var aDeepEntityItems = [];
+
+
+
+
+
 
             aItems.forEach(function (oItem) {
                 var oContext = oItem.getBindingContext("itemsModel");
@@ -441,6 +458,16 @@ onOrdenChange: function (oEvent) {
                     console.warn("No se encontraron el checkbox o el input en la fila.");
                     return;
                 }
+
+
+                // Leer valores de las celdas 0 a 5 (Inputs visibles)
+                var cuentaMayor = oItem.getCells()[3].mAggregations.items[1].mProperties.value;
+                var centroCoste = oItem.getCells()[4].mAggregations.items[1].mProperties.value;
+                var ordenInput = oItem.getCells()[5].mAggregations.items[1].mProperties.value;
+                var cantPorc = oItem.getCells()[6].mAggregations.items[1].mProperties.value;
+                var tipoImputacion = oItem.getCells()[7].mAggregations.items[1].mProperties.value;
+                var indDistribucion = oItem.getCells()[8].mAggregations.items[1].mProperties.value;
+
 
                 var bSelected = oCheckBox.getSelected();
                 var sInputValue = oInput.getValue().trim();
@@ -461,14 +488,14 @@ onOrdenChange: function (oEvent) {
                         Usuario: oModelUsuarios.Usuario,
                         Ubicacion: oModelUsuarios.Ubicacion,
                         TextoBreve: oModelUsuarios.TextoBreve,
-                        PeriodoDesde: oModelUsuarios.PeriodoDesde,
-                        PeriodoHasta: oModelUsuarios.PeriodoHasta,
-                        CuentaMayor: ModelFragment.CuentaMayor,
-                        CentroBeneficio: ModelFragment.CentroBeneficio,
-                        Porcentaje: ModelFragment.Porcentaje,
-                        ValorNeto: ModelFragment.ValorNeto,
-                        Indicador: ModelFragment.Indicador,
-                        TipoImputacion: ModelFragment.TipoImputacion
+                        PeriodoDesde: toYYYYMMDD(oModelUsuarios.PeriodoDesde),
+                        PeriodoHasta: toYYYYMMDD(oModelUsuarios.PeriodoHasta),
+                        CuentaMayor: cuentaMayor,
+                        CentroCosteIn: centroCoste,
+                        OrdenInput: ordenInput,
+                        CantPorc: cantPorc,
+                        TipoImputacion: tipoImputacion,
+                        IndDistribucionIn: indDistribucion
                     };
 
                     aDeepEntityItems.push(oEntry);
