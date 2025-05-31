@@ -1,0 +1,53 @@
+<c:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:c="sap.ui.core">
+
+    <Dialog id="myDialog" title="Agregar " class="sapUiResponsivePadding">
+        <content>
+            <VBox class="sapUiMediumMarginBottom sapUiSmallMargin">
+                <HBox>
+                    <!-- Usuario -->
+                    <VBox class="sapUiSmallMarginEnd sapUiSmallMarginBottom">
+                        <Label text="Cuenta Mayor"/>
+                        <Input id="inputCuentaMayor" />
+                    </VBox>
+
+                    <!-- Ubicación -->
+                    <VBox class="sapUiSmallMarginEnd sapUiSmallMarginBottom">
+                        <Label text="Centro Coste"/>
+                        <Input id="inputCentroBeneficio"  />
+                    </VBox>
+
+                     <!--  Texto  -->
+                     <VBox class="sapUiSmallMarginEnd sapUiSmallMarginBottom">
+                        <Label text="Cant/Porcentaje"/>
+                        <Input id="inputPorcentaje"  />
+                    </VBox>
+
+                     <!--  Desde  -->
+                    <VBox class="sapUiSmallMarginEnd sapUiSmallMarginBottom">
+                        <Label text="Orden"/>
+                        <Input id="inputValorNeto" />
+                    </VBox> 
+                                        <!--  Desde  -->
+                    <VBox class="sapUiSmallMarginEnd sapUiSmallMarginBottom">
+                        <Label text="indicador de Distribución"/>
+                        <Input id="inputIndiDis" />
+                    </VBox> 
+                                        <!--  Desde  -->
+                    <VBox class="sapUiSmallMarginEnd sapUiSmallMarginBottom">
+                        <Label text="Tipo Imputación"/>
+                        <Input id="inputtipoimputacion" />
+                    </VBox> 
+ 
+                   
+                </HBox>
+            </VBox>
+        </content>
+        <buttons>
+            <Button id="fragcerrar" text="Cerrar" press="onCloseDialog" />
+            <Button id="fragGuardar2" text="Guardar" press="onGuardarCM" />
+        
+        </buttons>
+    </Dialog>
+</c:FragmentDefinition>

@@ -1,0 +1,14 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+  <SelectDialog
+      id="tipoImputacionValueHelpDialog"
+      title="Seleccionar Tipo Imputación"
+      items="{TipoImputacionModel>/tipos}"
+      search=".onSearchTipoImputacion"
+      confirm=".onTipoImputacionSeleccionado"
+      cancel=".onCancelTipoImputacion">
+
+    <StandardListItem
+        title="{TipoImputacionModel>TipoImputacion}"
+        description="{TipoImputacionModel>Descripcion}" />
+  </SelectDialog>
+</core:FragmentDefinition>

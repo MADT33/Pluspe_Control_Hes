@@ -1,0 +1,13 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+    <SelectDialog
+        id="centroCosteValueHelpDialog"
+        title="Seleccionar Centro de Coste"
+        items="{centroCosteModel>/centros}"
+        search=".onSearchCentroCoste"
+        confirm=".onCentroCosteSeleccionado"
+        cancel=".onCancelCentroCoste">
+        <StandardListItem
+            title="{centroCosteModel>Centro}"
+            description="{centroCosteModel>Descripcion}" />
+    </SelectDialog>
+</core:FragmentDefinition>

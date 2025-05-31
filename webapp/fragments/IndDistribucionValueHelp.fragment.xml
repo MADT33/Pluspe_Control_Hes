@@ -1,0 +1,14 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+  <SelectDialog
+    
+    title="Seleccionar Indicador de Distribución"
+    items="{IndDistribucionModel>/indicadores}"
+    search=".onSearchDistribucion"
+    confirm=".onIndDistribucionSeleccionado"
+    cancel=".onCancelDistribucion">
+
+    <StandardListItem
+      title="{IndDistribucionModel>IndicadorDis}"
+      description="{IndDistribucionModel>Descripcion}" />
+  </SelectDialog>
+</core:FragmentDefinition>

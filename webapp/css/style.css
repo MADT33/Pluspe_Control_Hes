@@ -1,0 +1,13 @@
+/* Enter your custom styles here */
+
+
+.inputBelowText {
+  margin-top: 19px; /* ajusta el espacio que quieras */
+}
+
+.inputDisabledCustom {
+  background-color: #3e3c3c !important;
+  color: #3e3c3c  !important;
+  border-color: #3e3c3c  !important;
+}
+

@@ -1,0 +1,13 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+    <SelectDialog
+        id="cuentaMayorValueHelpDialog"
+        title="Seleccionar Cuenta Mayor"
+        items="{CuentaMayorModel>/cuentas}"
+        search=".onSearchCuentaMayor"
+        confirm=".onCuentaMayorSeleccionada"
+        cancel=".onCancelCuentaMayor">
+        <StandardListItem
+            title="{CuentaMayorModel>NumCuenta}"
+            description="{CuentaMayorModel>Descripcion}" />
+    </SelectDialog>
+</core:FragmentDefinition>

@@ -1,0 +1,154 @@
+<mvc:View
+    controllerName="pluspe.z9451controlhes.controller.Detalle"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    height="100%">
+
+    <Page title="Orden: {detalleModel>/orden}">
+
+ 
+
+        <content>
+            <Table
+                id="idDetalleTable"
+                items="{itemsModel>/items}">
+
+                <columns>
+                    <Column><Text text="Orden"/></Column>
+                    <Column><Text text="Orden Posición"/></Column>
+                    <Column><Text text="Servicio"/></Column>
+                    <Column width="9rem"><Text text="Contrato"/></Column>
+                    <Column width="9rem"><Text text="Número Pack"/></Column>
+                    <Column width="9rem"><Text text="Línea"/></Column>
+                    <Column width="9rem"><Text text="Valor"/></Column>
+                    <Column width="9rem"><Text text="Usado"/></Column>
+                    <Column width="9rem"><Text text="Saldo"/></Column>
+                    <Column><Text text="Totalizar"/></Column>
+                    <Column><Text text="Importe Nuevo"/></Column>
+                </columns>
+
+                <items>
+                    <ColumnListItem>
+                        <cells>
+                            <Text text="{itemsModel>Orden}"/>
+                            <Text text="{itemsModel>OrdenPosicion}"/>
+                            <Text text="{itemsModel>Servicio}"/>
+
+                                <!-- Cuenta Mayor -->
+                            <VBox id="idCuentaMayorBox">
+                            <Text text="{itemsModel>Contrato}"/>
+                             <Input 
+                                
+                                visible="{itemsModel>MostrarInputs}"  
+                                class="inputBelowText"  
+                                placeholder="Cuenta Mayor" 
+                                value="{itemsModel>CuentaMayor}"
+                                showValueHelp="true"
+                                liveChange=".onImputacionChange"
+                                valueHelpRequest=".onValueHelpCuentaMayor"
+                                width="100%" />
+                            </VBox>
+
+                             <!-- Centro de Coste -->
+                            <VBox id="idCentroCosteBox">
+                            <Text text="{itemsModel>NumeroPack}"/>
+                             <Input 
+                               
+                                 visible="{itemsModel>MostrarInputs}"  
+                                placeholder="Centro de Coste" 
+                                class="inputBelowText" 
+                                width="100%" 
+                                value="{itemsModel>CentroCoste}"
+                                liveChange=".onCentroCosteChange"
+                                change=".onCentroCosteChange"
+                                showValueHelp="true"
+                                valueHelpRequest=".onValueHelpCentroCoste"/>
+                                </VBox>
+
+
+                                   <!-- Orden -->
+                            <VBox id="idOrdenBox">
+                            <Text text="{itemsModel>Linea}"/>
+                            <Input 
+                         
+                             visible="{itemsModel>MostrarInputs}"  
+                            placeholder="Orden" 
+                            class="inputBelowText"  
+                            width="100%" 
+                            value="{itemsModel>OrdenInput}" 
+                            liveChange=".onOrdenChange"
+                            change=".onOrdenChange"/>
+                            </VBox>
+                              
+                            <!-- Cant/Porc -->
+                             <VBox id="idCanPorcBox">
+                            <Text text="{itemsModel>Valor}"/>
+                             <Input 
+                                  class="inputBelowText"  
+                                 visible="{itemsModel>MostrarInputs}"  
+                                placeholder="Cant/Porc"
+                                value="{itemsModel>CantPorc}" 
+                                width="100%" 
+                                liveChange=".onImputacionChange"/>
+                            </VBox>
+
+                             
+                             
+                             <!-- Tipo Imputacion -->
+                            <VBox id="idTipoImputacionBox">
+                            <Text text="{itemsModel>Usado}"/>
+                             <Input 
+                                
+                                visible="{itemsModel>MostrarInputs}"   
+                                placeholder="Tipo Imputación" 
+                                class="inputBelowText" 
+                                width="100%"
+                                value="{itemsModel>TipoImputacion}"
+                                showValueHelp="true"
+                                liveChange=".onImputacionChange"
+                                valueHelpRequest=".onValueHelpTipoImputacion" />
+                                </VBox>
+
+
+                            <!-- Ind Distribucion -->
+                            <VBox id="idDistribucionBox">
+                            <Text text="{itemsModel>Saldo}"/>
+                            <Input 
+                           
+                            visible="{itemsModel>MostrarInputs}"   
+                            placeholder="Ind. Distribución" 
+                            class="inputBelowText" 
+                            value="{itemsModel>IndDistribucion}"
+                            showValueHelp="true"
+                            liveChange=".onImputacionChange"
+                            valueHelpRequest=".onValueHelpDistribucion"
+                             width="100%" />
+                            </VBox>
+
+                            <CheckBox 
+                                id="check1"
+                                selected="{itemsModel>Totalizar}" 
+                                select="onCheckboxSelect"/>
+                            <Input 
+                                
+                                value="{itemsModel>ImporteNuevo}" 
+                                placeholder="Importe"
+                                enabled="{= !${itemsModel>Totalizar} }"
+                                valueLiveUpdate="true"
+                                liveChange=".onImporteNuevoChange"/>
+                        </cells>
+                    </ColumnListItem>
+                </items>
+            </Table>
+        </content>
+
+        <!-- Footer con botones -->
+        <footer>
+            <Toolbar>
+                <ToolbarSpacer/>
+                <Button text="Cancelar" type="Emphasized" press="onCancelPress"/>
+                <Button text="Continuar proceso de certificación" type="Emphasized" press="onContinuePress"/>
+            </Toolbar>
+        </footer>
+    </Page>
+</mvc:View>

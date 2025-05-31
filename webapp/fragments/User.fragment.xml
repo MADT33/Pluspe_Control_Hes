@@ -1,0 +1,48 @@
+<c:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:c="sap.ui.core">
+
+    <Dialog id="myDialog" title="Agregar Usuario" class="sapUiResponsivePadding">
+        <content>
+            <VBox class="sapUiMediumMarginBottom sapUiSmallMargin">
+                <HBox>
+                    <!-- Usuario -->
+                    <VBox class="sapUiSmallMarginEnd sapUiSmallMarginBottom">
+                        <Label text="Usuario"/>
+                        <Input id="inputUsuario" placeholder="Ingrese usuario" value="{detalleModel>/usuario}"/>
+                    </VBox>
+
+                    <!-- Ubicación -->
+                    <VBox class="sapUiSmallMarginEnd sapUiSmallMarginBottom">
+                        <Label text="Ubicación"/>
+                        <Input id="inputUbicacion" placeholder="Ingrese ubicación" value="{detalleModel>/ubicacion}"/>
+                    </VBox>
+
+                    <!-- Texto -->
+                    <VBox class="sapUiSmallMarginEnd sapUiSmallMarginBottom">
+                        <Label text="Texto"/>
+                        <Input id="inputTexto" placeholder="Ingrese texto" value="{detalleModel>/texto}"/>
+                    </VBox>
+
+                    <!-- Desde -->
+                    <VBox class="sapUiSmallMarginEnd sapUiSmallMarginBottom">
+                        <Label text="Desde"/>
+                        <DatePicker id="inputDesde" placeholder="Fecha desde" value="{detalleModel>/desde}" displayFormat="dd/MM/yyyy"/>
+                    </VBox>
+
+                    <!-- Hasta -->
+                    <VBox class="sapUiSmallMarginEnd sapUiSmallMarginBottom">
+                        <Label text="Hasta"/>
+                        <DatePicker id="inputHasta" placeholder="Fecha hasta" value="{detalleModel>/hasta}" displayFormat="dd/MM/yyyy"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+        </content>
+        <buttons>
+            <Button id="fragcerrar" text="Cerrar" press="onCloseDialog" />
+            <Button id="fragGuardar" text="Guardar" press="onGuardar" />
+        
+        </buttons>
+    </Dialog>
+</c:FragmentDefinition>
+

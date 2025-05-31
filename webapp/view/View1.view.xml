@@ -1,0 +1,284 @@
+<mvc:View controllerName="pluspe.z9451controlhes.controller.View1"
+   height="100%"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns="sap.m"
+	xmlns:layout="sap.ui.layout"
+	xmlns:semantic="sap.f.semantic"
+	>
+
+	<semantic:SemanticPage
+		id="mySemanticPage"
+		headerPinnable="true"
+		toggleHeaderOnTitleClick="true"
+		preserveHeaderStateOnScroll="false"
+		titleAreaShrinkRatio="1:1.6:1.6"
+		showFooter="{/showFooter}">
+
+		<!-- Header Content -->
+		<semantic:headerContent>
+	<HBox
+    justifyContent="Start"
+    alignItems="Center"
+    wrap="Wrap"
+    class="sapUiTinyMarginTop sapUiTinyMarginBottom sapUiTinyMarginBeginEnd">
+
+    <!-- Usuario -->
+
+<VBox class="sapUiTinyMarginEnd" width="10rem">
+    <Label text="Usuario"/>
+    <Input 
+        id="inputUsuario"
+        placeholder="Ingrese usuario"
+        value="{detalleModel>/usuario}"
+        showValueHelp="true"
+        valueHelpRequest=".onValueHelpUsuario"
+        width="100%"
+    />
+</VBox>
+
+    <!-- Ubicación -->
+    <VBox class="sapUiTinyMarginEnd" width="10rem">
+        <Label text="Ubicación"/>
+        <Input id="inputUbicacion" placeholder="Ingrese ubicación" value="{detalleModel>/ubicacion}" width="100%"/>
+    </VBox>
+
+    <!-- Texto -->
+    <VBox class="sapUiTinyMarginEnd" width="10rem">
+        <Label text="Texto"/>
+        <Input id="inputTexto" placeholder="Ingrese texto" value="{detalleModel>/texto}" width="100%"/>
+    </VBox>
+
+    <!-- Desde -->
+    <VBox class="sapUiTinyMarginEnd" width="10rem">
+        <Label text="Desde"/>
+        <DatePicker id="inputDesde" placeholder="Fecha desde" value="{detalleModel>/desde}"  valueFormat="yyyyMMdd"  displayFormat="dd/MM/yyyy" width="100%"/>
+    </VBox>
+
+    <!-- Hasta -->
+    <VBox class="sapUiTinyMarginEnd" width="10rem">
+        <Label text="Hasta"/>
+        <DatePicker id="inputHasta" placeholder="Fecha hasta" value="{detalleModel>/hasta}"  valueFormat="yyyyMMdd"  displayFormat="dd/MM/yyyy" width="100%"/>
+    </VBox>
+
+    <!-- Orden -->
+    <VBox class="sapUiTinyMarginEnd" width="10rem">
+        <Label text="Orden"/>
+        <Input id="inputOrden"
+            placeholder="Ingrese orden"
+            value="{
+                path : '/Orden',
+                type : 'sap.ui.model.odata.type.String',
+                constraints : {
+                    minLength: 10,
+                    maxLength: 10
+                }
+            }"
+            change=".onNameChange"
+            width="100%" />
+    </VBox>
+
+    <!-- Botón GO -->
+    <VBox width="6rem">
+        <Label text=" "/>
+        <Button text="GO" press="onGoPress" type="Emphasized" class="sapUiTinyMarginBeginEnd" width="100%"/>
+    </VBox>
+</HBox>
+		</semantic:headerContent>
+
+		<!-- Content -->
+		<semantic:content>
+			<layout:VerticalLayout>
+				<Panel headerText="Tabla de Productos" expandable="true" expanded="true" class="sapUiSmallMargin">
+					<Table
+						id="idProductsTable"
+						inset="false"
+						items="{OrdenModel>/Ordenes}"
+						class="sapFSemanticPageAlignContent"
+						width="auto"
+						
+						>
+
+						<columns >
+							<Column><Text text="Orden"/></Column>
+							<Column><Text text="OrdenPosicion"/></Column>
+							<Column><Text text="Descripcion"/></Column>
+							<Column><Text text="TipoOrdCompra"/></Column>
+							<Column><Text text="CatAsig"/></Column>
+                              
+						</columns>
+
+						<items>
+							<ColumnListItem vAlign="Middle" type="Navigation" press="onItemPress">
+								<cells>
+									<Text text="{OrdenModel>Orden}"/>
+									<Text text="{OrdenModel>OrdenPosicion}"/>
+									<Text text="{OrdenModel>Descripcion}"/>
+									<Text text="{OrdenModel>TipoOrdCompra}"/>
+									<Text text="{OrdenModel>CatAsig}"/>
+								</cells>
+							</ColumnListItem>
+						</items>
+					</Table>
+				</Panel>
+
+<Panel 
+    id="myPanel"
+    headerText="{= 'Otros Servicios no planificados (Acuerdo Marco) - Contrato: ' + ${OrdenModel>/Contrato}}" 
+    expandable="true" 
+    expanded="false" 
+    class="sapUiSmallMargin">
+    <headerToolbar>
+        <Toolbar>
+            <Title text="{= 'Otros Servicios no planificados (Acuerdo Marco) - Contrato: ' + ${OrdenModel>/Contrato}}"  />
+            <ToolbarSpacer/>
+            <Button 
+                id="toggleButton" 
+                type="Emphasized"
+                text="Agregar pos de Contrato" 
+                press="onTogglePanel"/>
+			    <Button 
+                id="toggleButton2" 
+                type="Default"
+                text="Continuar proceso de certificación" 
+				enabled="false"
+                press="ContinuarProceso"/>	
+        </Toolbar>
+    </headerToolbar>
+
+    <!-- Tabla para mostrar los detalles del contrato -->
+<Table
+    id="contratoTable"
+    items="{contratoModel>/ContratoDetalle}"
+    class="sapUiResponsiveMargin"
+    inset="false"
+    width="auto">
+
+    <columns>
+        <Column width="10rem"><Text text="Posición" /></Column>
+        <Column width="10rem"><Text text="Descripción" /></Column>
+        <Column><Text text="Num Servicio" /></Column>
+        <Column width="12rem"><Text text="Des Servicio" /></Column>
+        <Column><Text text="Cantidad" /></Column>
+        <Column><Text text="Usado" /></Column>
+        <Column><Text text="Restante" /></Column>
+        <Column><Text text="Importe Nuevo" /></Column>
+    </columns>
+
+    <items>
+        <ColumnListItem>
+            <cells>
+            <!-- Cuenta Mayor -->
+            <VBox id="idCuentaMayorBox">
+                <Text id="idOrdenPosicionText" text="{contratoModel>OrdenPosicion}" />
+                <Input 
+                    id="idCuentaMayorInput"
+                    visible="false"  
+                    class="inputBelowText"  
+                    placeholder="Cuenta Mayor" 
+                    value="{contratoModel>CuentaMayor}"
+                    showValueHelp="true"
+                    liveChange=".onImputacionChange"
+                    valueHelpRequest=".onValueHelpCuentaMayor"
+                    width="100%" />
+            </VBox>
+
+            <!-- Centro de Coste -->
+            <VBox id="idCentroCosteBox">
+                <Text id="idDescripcionContratoText" text="{contratoModel>DescripcionContrato}" />
+                <Input 
+                    id="idCentroCosteInput"  
+                    visible="false" 
+                    placeholder="Centro de Coste" 
+                    class="inputBelowText" 
+                    width="100%" 
+                    value="{contratoModel>CentroCoste}"
+                    liveChange=".onCentroCosteChange"
+                    change=".onCentroCosteChange"
+                    showValueHelp="true"
+                    valueHelpRequest=".onValueHelpCentroCoste"/>
+            </VBox>
+
+            <!-- Orden -->
+            <VBox id="idOrdenBox">
+                <Text id="idNroServicioText" text="{contratoModel>NroServicio}" />
+                <Input 
+                    id="idOrdenInput" 
+                    visible="false" 
+                    placeholder="Orden" 
+                    class="inputBelowText"  
+                    width="100%" 
+                    value="{contratoModel>Orden}" 
+                    liveChange=".onOrdenChange"
+                    change=".onOrdenChange"/>
+            </VBox>
+
+            <!-- Cant/Porc -->
+            <VBox id="idCanPorcBox">
+                <Text id="idDescripcionText" text="{contratoModel>Descripcion}" />
+                <Input 
+                    id="idCanPorcInput" 
+                    visible="false" 
+                    placeholder="Cant/Porc"
+                    value="{contratoModel>CantPorc}" 
+                    width="100%" 
+                    liveChange=".onImputacionChange"/>
+            </VBox>
+
+            <!-- Tipo Imputacion -->
+            <VBox id="idTipoImputacionBox">
+                <Text id="idCantidadText" text="{contratoModel>Cantidad}" />
+                <Input 
+                    id="idTipoImputacionInput"
+                    visible="false" 
+                    placeholder="Tipo Imputación" 
+                    class="inputBelowText" 
+                    width="100%"
+                    value="{contratoModel>TipoImputacion}"
+                    showValueHelp="true"
+                    liveChange=".onImputacionChange"
+                    valueHelpRequest=".onValueHelpTipoImputacion" />
+            </VBox>
+
+            <!-- Ind Distribucion -->
+            <VBox id="idDistribucionBox">
+                <Text id="idUsadoText" text="{contratoModel>Usado}" />
+                <Input 
+                    id="idIndDistribucionInput"  
+                    visible="false" 
+                    placeholder="Ind. Distribución" 
+                    class="inputBelowText" 
+                    value="{contratoModel>IndDistribucion}"
+                    showValueHelp="true"
+                    liveChange=".onImputacionChange"
+                    valueHelpRequest=".onValueHelpDistribucion"
+                    width="100%" />
+            </VBox>
+
+
+                
+                <!-- Restante -->
+                <VBox>
+                    <Text text="{contratoModel>Restante}" />
+                </VBox>
+                <!-- Importe Nuevo -->
+                <VBox>
+                    <Input
+                        id="idImporteNuevoInput"
+                        value="{contratoModel>ImporteNuevo}"
+                        liveChange=".onInputChange"
+                        placeholder="Nuevo Importe"
+                        width="100%" />
+                </VBox>
+            </cells>
+        </ColumnListItem>
+    </items>
+</Table>
+
+</Panel>
+
+			</layout:VerticalLayout>
+		</semantic:content>
+		
+
+	</semantic:SemanticPage>
+</mvc:View>
