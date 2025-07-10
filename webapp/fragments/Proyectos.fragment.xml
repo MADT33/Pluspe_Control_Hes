@@ -1,0 +1,14 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+<SelectDialog
+    id="ProyectoValueHelpDialog"
+    title="Seleccionar Proyecto"
+    items="{proyectosModel>/proyectos}"
+    search=".onSearchProyecto"
+    confirm=".onConfirmarProyecto"
+    cancel=".onCancelProyecto">
+
+  <StandardListItem
+      title="{proyectosModel>Id}"
+      description="{proyectosModel>Descripcion}" />
+</SelectDialog>
+</core:FragmentDefinition>

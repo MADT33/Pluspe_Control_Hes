@@ -1,0 +1,23 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+  <Dialog
+    id="messageDialog"
+    title="Mensajes del sistema"
+    contentWidth="600px"
+    contentHeight="400px"
+    draggable="true"
+    resizable="true"
+    class="sapUiResponsivePadding--header sapUiResponsivePadding--content sapUiResponsivePadding--footer">
+    <List id="messageList" items="{messageModel>/messages}">
+      <ObjectListItem title="{messageModel>title}" type="Inactive" showMarkers="false">
+        <firstStatus>
+          <ObjectStatus
+            state="{= ${messageModel>type} === 'Error' ? 'Error' : ${messageModel>type} === 'Warning' ? 'Warning' : ${messageModel>type} === 'Success' ? 'Success' : ${messageModel>type} === 'Information' ? 'Information' : 'None'}"
+            icon="{= ${messageModel>type} === 'Error' ? 'sap-icon://error' : ${messageModel>type} === 'Warning' ? 'sap-icon://alert' : ${messageModel>type} === 'Success' ? 'sap-icon://sys-enter' : ${messageModel>type} === 'Information' ? 'sap-icon://information' : 'sap-icon://message-information'}" />
+        </firstStatus>
+      </ObjectListItem>
+    </List>
+    <endButton>
+      <Button text="Cerrar" press=".onCloseDialog"/>
+    </endButton>
+  </Dialog>
+</core:FragmentDefinition>

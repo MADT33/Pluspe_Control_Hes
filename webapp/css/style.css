@@ -11,3 +11,20 @@
   border-color: #3e3c3c  !important;
 }
 
+.negrita {
+
+  font-weight: bold;
+  color: #000000; /* Negro pleno */
+}
+
+.filaGris {
+    background-color: #c4bfbf !important;
+}
+
+.filaBlanca {
+    background-color: #ffffff !important;
+}
+
+.inputWithTopMargin {
+    margin-top: 2rem; /* Ajustá el valor a gusto */
+}

@@ -1,6 +1,7 @@
 <mvc:View controllerName="pluspe.z9451controlhes.controller.View1"
    height="100%"
 	xmlns:mvc="sap.ui.core.mvc"
+    xmlns:core="sap.ui.core"
 	xmlns="sap.m"
 	xmlns:layout="sap.ui.layout"
 	xmlns:semantic="sap.f.semantic"
@@ -16,6 +17,7 @@
 
 		<!-- Header Content -->
 		<semantic:headerContent>
+        <Title text="Datos Basicos HES" class="sapUiTinyMarginBeginEnd sapUiTinyMarginTop"/>
 	<HBox
     justifyContent="Start"
     alignItems="Center"
@@ -57,12 +59,12 @@
     <!-- Hasta -->
     <VBox class="sapUiTinyMarginEnd" width="10rem">
         <Label text="Hasta"/>
-        <DatePicker id="inputHasta" placeholder="Fecha hasta" value="{detalleModel>/hasta}"  valueFormat="yyyyMMdd"  displayFormat="dd/MM/yyyy" width="100%"/>
+        <DatePicker id="inputHasta" change=".onFechaHastaChange" placeholder="Fecha hasta" value="{detalleModel>/hasta}"  valueFormat="yyyyMMdd"  displayFormat="dd/MM/yyyy" width="100%"/>
     </VBox>
 
     <!-- Orden -->
-    <VBox class="sapUiTinyMarginEnd" width="10rem">
-        <Label text="Orden"/>
+    <VBox class="sapUiTinyMarginEnd" width="13rem">
+        <Label text="Orden de compra Planificada" class="negrita"/>
         <Input id="inputOrden"
             placeholder="Ingrese orden"
             value="{
@@ -88,7 +90,7 @@
 		<!-- Content -->
 		<semantic:content>
 			<layout:VerticalLayout>
-				<Panel headerText="Tabla de Productos" expandable="true" expanded="true" class="sapUiSmallMargin">
+				<Panel headerText="Orden de compra Planificada" expandable="true" expanded="true" class="sapUiSmallMargin">
 					<Table
 						id="idProductsTable"
 						inset="false"
@@ -123,13 +125,13 @@
 
 <Panel 
     id="myPanel"
-    headerText="{= 'Otros Servicios no planificados (Acuerdo Marco) - Contrato: ' + ${OrdenModel>/Contrato}}" 
+    headerText="{= 'Orden de compra Panificada' + ${OrdenModel>/Contrato}}" 
     expandable="true" 
     expanded="false" 
     class="sapUiSmallMargin">
     <headerToolbar>
         <Toolbar>
-            <Title text="{= 'Otros Servicios no planificados (Acuerdo Marco) - Contrato: ' + ${OrdenModel>/Contrato}}"  />
+            <Title text="{= 'Acuerdo Marco - Contrato :  ' + ${OrdenModel>/Contrato}}" visible="{= !!${OrdenModel>/Contrato}}" />
             <ToolbarSpacer/>
             <Button 
                 id="toggleButton" 
@@ -137,6 +139,7 @@
                 text="Agregar pos de Contrato" 
                 press="onTogglePanel"/>
 			    <Button 
+                visible="true"
                 id="toggleButton2" 
                 type="Default"
                 text="Continuar proceso de certificación" 
@@ -154,126 +157,173 @@
     width="auto">
 
     <columns>
-        <Column width="10rem"><Text text="Posición" /></Column>
+        <Column width="6rem"><Text text="Posición" /></Column>
         <Column width="10rem"><Text text="Descripción" /></Column>
         <Column><Text text="Num Servicio" /></Column>
         <Column width="12rem"><Text text="Des Servicio" /></Column>
         <Column><Text text="Cantidad" /></Column>
         <Column><Text text="Usado" /></Column>
         <Column><Text text="Restante" /></Column>
-        <Column><Text text="Importe Nuevo" /></Column>
+        <Column><Text text="Importe Nuevo" visible="false"/></Column>
+        <Column id="colAccion" visible="false"><Text text="Accion" /></Column>
     </columns>
 
     <items>
-        <ColumnListItem>
+        <ColumnListItem type="Inactive" class="{contratoModel>ColorClase}"> 
+            <customData>
+                <core:CustomData key="colorClase" value="{contratoModel>ColorClase}" writeToDom="true"/>
+            </customData>
+
             <cells>
-            <!-- Cuenta Mayor -->
-            <VBox id="idCuentaMayorBox">
-                <Text id="idOrdenPosicionText" text="{contratoModel>OrdenPosicion}" />
-                <Input 
-                    id="idCuentaMayorInput"
-                    visible="false"  
-                    class="inputBelowText"  
-                    placeholder="Cuenta Mayor" 
-                    value="{contratoModel>CuentaMayor}"
-                    showValueHelp="true"
-                    liveChange=".onImputacionChange"
-                    valueHelpRequest=".onValueHelpCuentaMayor"
-                    width="100%" />
-            </VBox>
+                <!-- Cuenta Mayor -->
+                <VBox id="idCuentaMayorBox">
+                    <Text id="idOrdenPosicionText" 
+                          text="{contratoModel>OrdenPosicion}"
+                          visible="{= ${contratoModel>EsOriginal} === true }" />
+                    <Input 
+                        id="idCuentaMayorInput"
+                        visible="{= !${contratoModel>EsOriginal} }"
+                        class="inputBelowText"  
+                        placeholder="Cuenta Mayor" 
+                        value="{path: 'contratoModel>CuentaMayor', mode: 'TwoWay'}"
+                        showValueHelp="true"
+                        liveChange=".onImputacionChange"
+                        valueHelpRequest=".onValueHelpCuentaMayor"
+                        width="100%" />
+                </VBox>
 
-            <!-- Centro de Coste -->
-            <VBox id="idCentroCosteBox">
-                <Text id="idDescripcionContratoText" text="{contratoModel>DescripcionContrato}" />
-                <Input 
-                    id="idCentroCosteInput"  
-                    visible="false" 
-                    placeholder="Centro de Coste" 
-                    class="inputBelowText" 
-                    width="100%" 
-                    value="{contratoModel>CentroCoste}"
-                    liveChange=".onCentroCosteChange"
-                    change=".onCentroCosteChange"
-                    showValueHelp="true"
-                    valueHelpRequest=".onValueHelpCentroCoste"/>
-            </VBox>
+                <!-- Centro de Coste -->
+                <VBox id="idCentroCosteBox">
+                    <Text id="idDescripcionContratoText" 
+                          text="{contratoModel>DescripcionContrato}" 
+                          visible="{= ${contratoModel>EsOriginal} === true }"/>
+                    <Input 
+                        id="idCentroCosteInput"  
+                        visible="{= !${contratoModel>EsOriginal} }"
+                        placeholder="Centro de Coste" 
+                        class="inputBelowText" 
+                        width="100%" 
+                        value="{path: 'contratoModel>CentroCoste', mode: 'TwoWay'}"
+                        liveChange=".onCentroCosteChange"
+                        change=".onCentroCosteChange"
+                        showValueHelp="true"
+                        valueHelpRequest=".onValueHelpCentroCoste"/>
+                </VBox>
 
-            <!-- Orden -->
-            <VBox id="idOrdenBox">
-                <Text id="idNroServicioText" text="{contratoModel>NroServicio}" />
-                <Input 
-                    id="idOrdenInput" 
-                    visible="false" 
-                    placeholder="Orden" 
-                    class="inputBelowText"  
-                    width="100%" 
-                    value="{contratoModel>Orden}" 
-                    liveChange=".onOrdenChange"
-                    change=".onOrdenChange"/>
-            </VBox>
+                <!-- Orden -->
+                <VBox id="idOrdenBox">
+                    <Text id="idNroServicioText" 
+                          text="{contratoModel>NroServicio}"
+                          visible="{= ${contratoModel>EsOriginal} === true }" />
+                    <Input 
+                        id="idOrdenInput" 
+                        visible="{= !${contratoModel>EsOriginal} }"
+                        placeholder="Orden" 
+                        class="inputBelowText"  
+                        width="100%" 
+                        value="{path: 'contratoModel>Orden', mode: 'TwoWay'}"
+                        liveChange=".onOrdenChange"
+                        change=".onOrdenChange"/>
+                </VBox>
 
-            <!-- Cant/Porc -->
-            <VBox id="idCanPorcBox">
-                <Text id="idDescripcionText" text="{contratoModel>Descripcion}" />
-                <Input 
-                    id="idCanPorcInput" 
-                    visible="false" 
-                    placeholder="Cant/Porc"
-                    value="{contratoModel>CantPorc}" 
-                    width="100%" 
-                    liveChange=".onImputacionChange"/>
-            </VBox>
+                <!-- Cant/Porc -->
+                <VBox id="idCanPorcBox">
+                    <Text id="idDescripcionText" 
+                          text="{contratoModel>Descripcion}"
+                          visible="{= ${contratoModel>EsOriginal} === true }" />
+                    <Input 
+                        id="idCanPorcInput" 
+                        visible="{= !${contratoModel>EsOriginal} }"
+                        placeholder="Cant/Porc"
+                        value="{path: 'contratoModel>CantPorc', mode: 'TwoWay'}"
+                        width="100%" 
+                        liveChange=".onImputacionChange"/>
+                </VBox>
 
-            <!-- Tipo Imputacion -->
-            <VBox id="idTipoImputacionBox">
-                <Text id="idCantidadText" text="{contratoModel>Cantidad}" />
-                <Input 
-                    id="idTipoImputacionInput"
-                    visible="false" 
-                    placeholder="Tipo Imputación" 
-                    class="inputBelowText" 
-                    width="100%"
-                    value="{contratoModel>TipoImputacion}"
-                    showValueHelp="true"
-                    liveChange=".onImputacionChange"
-                    valueHelpRequest=".onValueHelpTipoImputacion" />
-            </VBox>
+                <!-- Tipo Imputacion -->
+                <VBox id="idTipoImputacionBox">
+                    <Text id="idCantidadText"
+                          text="{contratoModel>Cantidad}"
+                          visible="{= ${contratoModel>EsOriginal} === true }" />
+                    <Input 
+                        id="idTipoImputacionInput"
+                        visible="{= !${contratoModel>EsOriginal} }"
+                        placeholder="Tipo Imputación" 
+                        class="inputBelowText" 
+                        width="100%"
+                        value="{path: 'contratoModel>TipoImputacion', mode: 'TwoWay'}"
+                        showValueHelp="true"
+                        liveChange=".onImputacionChange"
+                        valueHelpRequest=".onValueHelpTipoImputacion" />
+                </VBox>
 
-            <!-- Ind Distribucion -->
-            <VBox id="idDistribucionBox">
-                <Text id="idUsadoText" text="{contratoModel>Usado}" />
-                <Input 
-                    id="idIndDistribucionInput"  
-                    visible="false" 
-                    placeholder="Ind. Distribución" 
-                    class="inputBelowText" 
-                    value="{contratoModel>IndDistribucion}"
-                    showValueHelp="true"
-                    liveChange=".onImputacionChange"
-                    valueHelpRequest=".onValueHelpDistribucion"
-                    width="100%" />
-            </VBox>
+                <!-- Ind Distribucion -->
+                <VBox id="idDistribucionBox">
+                    <Text id="idUsadoText"
+                          text="{contratoModel>Usado}"
+                          visible="{= ${contratoModel>EsOriginal} === true }" />
+                    <Input 
+                        id="idIndDistribucionInput"  
+                        visible="{= !${contratoModel>EsOriginal} }"
+                        placeholder="Ind. Distribución" 
+                        class="inputBelowText" 
+                        value="{path: 'contratoModel>IndDistribucion', mode: 'TwoWay'}"
+                        showValueHelp="true"
+                        liveChange=".onImputacionChange"
+                        valueHelpRequest=".onValueHelpDistribucion"
+                        width="100%" />
+                </VBox>
 
-
-                
                 <!-- Restante -->
                 <VBox>
-                    <Text text="{contratoModel>Restante}" />
-                </VBox>
+                    <Text text="{contratoModel>Restante}" 
+                    visible="{= ${contratoModel>EsOriginal} }" />
+                    <Input 
+                        id="idProyectosInput"
+                        visible="{= !${contratoModel>EsOriginal} }"
+                        placeholder="Proyecto"
+                        class="inputBelowText"
+                        value="{path: 'contratoModel>Proyectos', mode: 'TwoWay'}"
+                        showValueHelp="true"
+                        liveChange=".onImputacionChange"
+                        valueHelpRequest=".onValueHelpProyecto"
+                        width="100%" />
+
+                   </VBox>
+
                 <!-- Importe Nuevo -->
                 <VBox>
                     <Input
+                        visible="{= ${contratoModel>EsOriginal} }"
                         id="idImporteNuevoInput"
-                        value="{contratoModel>ImporteNuevo}"
+                        value="{path: 'contratoModel>ImporteNuevo', mode: 'TwoWay'}"
                         liveChange=".onInputChange"
                         placeholder="Nuevo Importe"
                         width="100%" />
                 </VBox>
+
+                <!-- Botones -->
+                <HBox>
+                    <Button
+                        id="idAccionButton"
+                        visible="false"
+                        icon="sap-icon://add"
+                        type="Neutral"
+                        width="0.5rem"
+                        press="onAccionPress" />
+
+                    <Button
+                        id="idAccionButton2"
+                        visible="false"
+                        icon="sap-icon://less"
+                        type="Neutral"
+                        width="0.5rem"
+                        press=".onAccionPress2" />
+                </HBox> 
             </cells>
         </ColumnListItem>
     </items>
 </Table>
-
 </Panel>
 
 			</layout:VerticalLayout>

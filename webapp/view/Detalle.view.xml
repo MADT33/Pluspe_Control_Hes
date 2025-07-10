@@ -4,7 +4,7 @@
     xmlns="sap.m"
     height="100%">
 
-    <Page title="Orden: {detalleModel>/orden}">
+    <Page id="mainPage" title="Orden: {detalleModel>/orden}">
 
  
 
@@ -14,33 +14,34 @@
                 items="{itemsModel>/items}">
 
                 <columns>
-                    <Column><Text text="Orden"/></Column>
-                    <Column><Text text="Orden Posición"/></Column>
-                    <Column><Text text="Servicio"/></Column>
-                    <Column width="9rem"><Text text="Contrato"/></Column>
-                    <Column width="9rem"><Text text="Número Pack"/></Column>
-                    <Column width="9rem"><Text text="Línea"/></Column>
-                    <Column width="9rem"><Text text="Valor"/></Column>
-                    <Column width="9rem"><Text text="Usado"/></Column>
-                    <Column width="9rem"><Text text="Saldo"/></Column>
-                    <Column><Text text="Totalizar"/></Column>
-                    <Column><Text text="Importe Nuevo"/></Column>
+                    <Column><Text text="Contrato"/></Column>
+                    <Column><Text text="Orden Compra"/></Column>
+                    <Column width="8rem"><Text text="Posición OC"/></Column>                                
+                    <Column width="8rem"><Text text="Cod.Servicio"/></Column>
+                    <Column width="8rem"><Text text="Descripcion"/></Column>
+                    <Column width="5rem"><Text text="Cantidad Solicitada"/></Column>
+                    <Column width="8rem"><Text text="Cantidad Certificada"/></Column>
+                    <Column width="8rem"><Text text="Cantidad sin Ejecutar"/></Column>
+                    <Column ><Text text="Cert.Total Pos"/></Column>
+                    <Column width="7rem"><Text text="Cantidad a Certificar"/></Column>
+                     <Column id="colAccion2" visible="{detalleModel>/mostrarAccion}"><Text text="Accion" /></Column>
                 </columns>
 
                 <items>
                     <ColumnListItem>
                         <cells>
+                            
+                            <Text text="{itemsModel>Contrato}"/>
                             <Text text="{itemsModel>Orden}"/>
-                            <Text text="{itemsModel>OrdenPosicion}"/>
-                            <Text text="{itemsModel>Servicio}"/>
+                            
 
                                 <!-- Cuenta Mayor -->
                             <VBox id="idCuentaMayorBox">
-                            <Text text="{itemsModel>Contrato}"/>
+                            <Text text="{itemsModel>OrdenPosicion}"/>
                              <Input 
-                                
+                                 class="inputBelowText sapUiLargeMarginTop"  
                                 visible="{itemsModel>MostrarInputs}"  
-                                class="inputBelowText"  
+                               
                                 placeholder="Cuenta Mayor" 
                                 value="{itemsModel>CuentaMayor}"
                                 showValueHelp="true"
@@ -51,12 +52,12 @@
 
                              <!-- Centro de Coste -->
                             <VBox id="idCentroCosteBox">
-                            <Text text="{itemsModel>NumeroPack}"/>
+                            <Text text="{itemsModel>Servicio}"/>
                              <Input 
                                
                                  visible="{itemsModel>MostrarInputs}"  
                                 placeholder="Centro de Coste" 
-                                class="inputBelowText" 
+                                 class="inputBelowText sapUiLargeMarginTop"  
                                 width="100%" 
                                 value="{itemsModel>CentroCoste}"
                                 liveChange=".onCentroCosteChange"
@@ -68,12 +69,12 @@
 
                                    <!-- Orden -->
                             <VBox id="idOrdenBox">
-                            <Text text="{itemsModel>Linea}"/>
+                            <Text text="{itemsModel>NumeroPack}"/>
                             <Input 
                          
                              visible="{itemsModel>MostrarInputs}"  
                             placeholder="Orden" 
-                            class="inputBelowText"  
+                            class="inputBelowText sapUiSmallMarginTop"  
                             width="100%" 
                             value="{itemsModel>OrdenInput}" 
                             liveChange=".onOrdenChange"
@@ -84,7 +85,7 @@
                              <VBox id="idCanPorcBox">
                             <Text text="{itemsModel>Valor}"/>
                              <Input 
-                                  class="inputBelowText"  
+                                  class="inputBelowText sapUiLargeMarginTop"  
                                  visible="{itemsModel>MostrarInputs}"  
                                 placeholder="Cant/Porc"
                                 value="{itemsModel>CantPorc}" 
@@ -101,7 +102,7 @@
                                 
                                 visible="{itemsModel>MostrarInputs}"   
                                 placeholder="Tipo Imputación" 
-                                class="inputBelowText" 
+                               class="inputBelowText sapUiLargeMarginTop"  
                                 width="100%"
                                 value="{itemsModel>TipoImputacion}"
                                 showValueHelp="true"
@@ -117,7 +118,7 @@
                            
                             visible="{itemsModel>MostrarInputs}"   
                             placeholder="Ind. Distribución" 
-                            class="inputBelowText" 
+                            class="inputBelowText sapUiLargeMarginTop"  
                             value="{itemsModel>IndDistribucion}"
                             showValueHelp="true"
                             liveChange=".onImputacionChange"
@@ -125,17 +126,53 @@
                              width="100%" />
                             </VBox>
 
+
+                             <VBox id="idContrato">
                             <CheckBox 
                                 id="check1"
                                 selected="{itemsModel>Totalizar}" 
-                                select="onCheckboxSelect"/>
+                                select="onCheckboxSelect"
+                                visible="{= !${itemsModel>EsClon} }"/>
+                              
+                        <Input 
+                         id="idProyectosInput"
+                       visible="{itemsModel>MostrarInputs}"
+                        placeholder="Proyecto"
+                        class="inputBelowText"
+                        value="{path: 'itemsModel>Proyectos', mode: 'TwoWay'}"
+                        showValueHelp="true"
+                        liveChange=".onImputacionChange"
+                        valueHelpRequest=".onValueHelpProyecto"
+                        width="100%" />
+                           </VBox>
+
+
+                            
                             <Input 
-                                
-                                value="{itemsModel>ImporteNuevo}" 
-                                placeholder="Importe"
-                                enabled="{= !${itemsModel>Totalizar} }"
-                                valueLiveUpdate="true"
-                                liveChange=".onImporteNuevoChange"/>
+                        visible="{= ${itemsModel>EsOriginal} }"
+                        value="{itemsModel>ImporteNuevo}" 
+                        placeholder="Importe"
+                        enabled="{= !${itemsModel>Totalizar} }"
+                        valueLiveUpdate="true"
+                        liveChange=".onImporteNuevoChange"/>
+
+                    <HBox visible="{= !${itemsModel>EsClon} }">
+                       <Button
+                        id="idAccionButtonDetalle"
+                        visible="{detalleModel>/mostrarAccion}"
+                        icon="sap-icon://add"
+                        type="Neutral"
+                        width="0.5rem"
+                        press="onAccionDetallePress" />
+                        
+                    <Button
+                        id="idAccionButton2Detalle"
+                        visible="{= ${itemsModel>EsClon} }"
+                        icon="sap-icon://less"
+                        type="Neutral"
+                        width="0.5rem"
+                        press=".onAccionDetallePPress2" />
+                </HBox> 
                         </cells>
                     </ColumnListItem>
                 </items>
@@ -146,7 +183,7 @@
         <footer>
             <Toolbar>
                 <ToolbarSpacer/>
-                <Button text="Cancelar" type="Emphasized" press="onCancelPress"/>
+                <Button id="BNFinal" text="Cancelar" type="Emphasized" press="onCancelPress"/>
                 <Button text="Continuar proceso de certificación" type="Emphasized" press="onContinuePress"/>
             </Toolbar>
         </footer>

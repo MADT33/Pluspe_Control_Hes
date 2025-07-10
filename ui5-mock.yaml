@@ -36,7 +36,7 @@ server:
         mountPath: /
         services:
           - urlPath: /sap/opu/odata/sap/ZGW_9451_CONTROL_HES_SRV
-            metadataPath: ./webapp/localService/metadata.xml
-            mockdataPath: ./webapp/localService/data
+            metadataPath: ./webapp/localService/mainService/metadata.xml
+            mockdataPath: ./webapp/localService/mainService/data
             generateMockData: true
         annotations: []

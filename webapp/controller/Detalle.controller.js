@@ -5,8 +5,34 @@ sap.ui.define([
     "sap/ui/model/FilterOperator",
     "sap/ui/core/Fragment",
     "sap/m/MessageToast",
-    "sap/m/MessageBox"
-], function (Controller, JSONModel, Filter, FilterOperator, Fragment, MessageToast, MessageBox) {
+    "sap/m/MessageBox",
+    "sap/m/Link",
+    "sap/m/MessageItem",
+    "sap/m/MessageView",
+    "sap/ui/core/message/Message",
+    "sap/m/MessagePopover",
+    "sap/ui/core/Icon",
+    "sap/ui/core/library",
+    "sap/ui/core/Messaging",
+    "sap/ui/core/message/MessageType"
+], function (
+    Controller,
+    JSONModel,
+    Filter,
+    FilterOperator,
+    Fragment,
+    MessageToast,
+    MessageBox,
+    Link,
+    MessageItem,
+    MessageView,
+    Message,
+    MessagePopover,
+    Icon,
+    library,
+    Messaging,
+    MessageType
+) {
     "use strict";
 
     return Controller.extend("pluspe.z9451controlhes.controller.Detalle", {
@@ -15,10 +41,14 @@ sap.ui.define([
             const oRouter = this.getOwnerComponent().getRouter();
             oRouter.getRoute("Detalle").attachPatternMatched(this._onRouteMatched, this);
 
-            const oFormDataModel = this.getOwnerComponent().getModel("formData");
-            if (oFormDataModel) {
-                this.getView().setModel(oFormDataModel, "formData");
+            var oGlobalModel = this.getOwnerComponent().getModel("globalModel");
+            if (oGlobalModel) {
+                var oGlobalData = oGlobalModel.getData();
+                console.log("Modelo global recibido:", oGlobalData);
+            } else {
+                console.error("No se encontró el modelo global");
             }
+
         },
 
         _onRouteMatched: function (oEvent) {
@@ -43,12 +73,16 @@ sap.ui.define([
                 new Filter("OrdenPosicion", FilterOperator.EQ, sOrdenPosicion)
             ];
 
+
+            const bMostrarAccion = sCatAsig === "U";
+            this.getView().getModel("detalleModel").setProperty("/mostrarAccion", bMostrarAccion);
+
             oModel.read("/InDetallePedidoSet", {
                 filters: aFilters,
                 success: function (oData) {
                     oData.results.forEach(function (item) {
                         item.Totalizar = item.Totalizar === "true" || item.Totalizar === true;
-                        item.MostrarInputs = (sCatAsig === "U");
+                        item.MostrarInputs = bMostrarAccion;
                     });
 
                     const oItemsModel = new JSONModel({ items: oData.results });
@@ -59,6 +93,134 @@ sap.ui.define([
                 }
             });
         },
+        onAccionDetallePress: function (oEvent) {
+            var oButton = oEvent.getSource();
+            var oContext = oButton.getBindingContext("itemsModel");
+
+            if (oContext) {
+                var sPath = oContext.getPath();
+                var oModel = oContext.getModel();
+                var oOriginalData = oModel.getProperty(sPath);
+
+                var oClonedData = JSON.parse(JSON.stringify(oOriginalData));
+
+                oClonedData.CantPorc = oOriginalData.CantPorc;
+                oClonedData.CentroBeneficio = "";
+                oClonedData.Contrato = oOriginalData.Contrato;
+                oClonedData.Linea = "";
+                oClonedData.NumeroPack = "";
+                oClonedData.Orden = oOriginalData.Orden;
+                oClonedData.OrdenPosicion = "";
+                oClonedData.Servicio = "";
+                oClonedData.Usado = "";
+                oClonedData.Valor = "";
+                oClonedData.Saldo = "";
+                oClonedData.ImporteNuevo = oOriginalData.ImporteNuevo || "";
+
+
+                oClonedData.Proyectos = "";
+                oClonedData.DescripcionProyecto = "";
+
+                oClonedData.EsClon = true;
+                oClonedData.MostrarInputs = true;
+                oClonedData.EsOriginal = false;
+
+                oClonedData.ClaseInput = "inputBelowText sapUiLargeMarginTop";
+                oClonedData.MostrarCheck = false;
+
+                var aItems = oModel.getProperty("/items");
+                var iIndex = parseInt(sPath.split("/").pop(), 10);
+
+                aItems.splice(iIndex + 1, 0, oClonedData);
+                oModel.setProperty("/items", aItems);
+                oModel.refresh(true);
+            }
+        }
+
+        ,
+
+        onAccionDetallePPress2: function () {
+            var oModel = this.getView().getModel("itemsModel");
+            var aData = oModel.getProperty("/items");
+
+
+            var iLastClonIndex = -1;
+            for (var i = aData.length - 1; i >= 0; i--) {
+                if (aData[i].EsClon === true) {
+                    iLastClonIndex = i;
+                    break;
+                }
+            }
+
+            if (iLastClonIndex === -1) {
+                sap.m.MessageToast.show("No hay clones para eliminar.");
+                return;
+            }
+
+
+            aData.splice(iLastClonIndex, 1);
+
+
+            oModel.setProperty("/items", aData);
+            this.byId("idDetalleTable").getBinding("items").refresh(true);
+        },
+
+        onValueHelpProyecto: function (oEvent) {
+            var oView = this.getView();
+            var oModel = this.getOwnerComponent().getModel();
+
+
+            this._currentRowContext = oEvent.getSource().getBindingContext("itemsModel");
+
+            oModel.read("/ProyectosSet", {
+                success: function (oData) {
+                    var oProyectosModel = new sap.ui.model.json.JSONModel({
+                        proyectos: oData.results
+                    });
+                    oView.setModel(oProyectosModel, "proyectosModel");
+
+                    if (!this._oProyectoDialog) {
+                        sap.ui.core.Fragment.load({
+                            name: "pluspe.z9451controlhes.fragments.Proyectos",
+                            id: oView.getId(),
+                            controller: this
+                        }).then(function (oDialog) {
+                            this._oProyectoDialog = oDialog;
+                            oView.addDependent(oDialog);
+                            this._oProyectoDialog.open();
+                        }.bind(this));
+                    } else {
+                        this._oProyectoDialog.open();
+                    }
+                }.bind(this),
+                error: function (oError) {
+                    sap.m.MessageToast.show("Error al cargar los proyectos");
+                    console.error("OData error al leer /ProyectosSet", oError);
+                }
+            });
+        },
+        onConfirmarProyecto: function (oEvent) {
+            var oSelectedItem = oEvent.getParameter("selectedItem");
+            if (!oSelectedItem) return;
+
+            var oContext = this._currentRowContext;
+
+            if (oContext) {
+                var sPath = oContext.getPath();
+                var oModel = this.getView().getModel("itemsModel");
+
+                var sId = oSelectedItem.getTitle();
+                var sDescripcion = oSelectedItem.getDescription();
+
+                oModel.setProperty(sPath + "/Proyectos", sId);
+                oModel.setProperty(sPath + "/DescripcionProyecto", sDescripcion);
+            }
+        }
+
+
+
+
+        ,
 
         onValueHelpCuentaMayor: function (oEvent) {
             const oInput = oEvent.getSource();
@@ -239,7 +401,7 @@ sap.ui.define([
             }
         },
         _habilitarInputOrdenSegunCentro: function (oRow) {
-            // Buscar el input Orden dentro de la misma fila
+
             var oInputOrden = oRow.getCells().find(function (oCell) {
                 if (oCell instanceof sap.m.Input && oCell.getId().includes("Orden")) {
                     return true;
@@ -327,7 +489,7 @@ sap.ui.define([
                 const oModel = this.getView().getModel("itemsModel");
                 oModel.setProperty(this._oCentroCosteContext.getPath() + "/CentroCoste", sCentro);
 
-                // Accedo al item de la tabla para deshabilitar input Orden si corresponde
+
                 const oTable = this.byId("idDetalleTable");
                 const aItems = oTable.getItems();
 
@@ -341,7 +503,7 @@ sap.ui.define([
 
                 this._oCentroCosteContext = null;
 
-                // Cerramos el dialog
+
                 this._oCentroCosteDialog.close();
             }
         },
@@ -369,19 +531,6 @@ sap.ui.define([
         },
 
 
-        onImporteNuevoChange: function (oEvent) {
-
-            var oModelCast = this.getView().getModel("detalleModel").getData();
-
-            if (oModelCast.catAsig === "U") {
-
-                var bMostrar = !!sValor;
-                oModel.setProperty(sPath + "/MostrarInputs", bMostrar);
-            } else {
-                oModel.setProperty(sPath + "/MostrarInputs", false); // Asegura que no se muestre si no es 'U'
-            }
-        },
-
         onCheckboxSelect: function (oEvent) {
             var oListItem = oEvent.getSource().getParent();
             var oInput = oListItem.getCells()[10];
@@ -391,6 +540,38 @@ sap.ui.define([
 
         onCloseDialog: function () {
             this.byId("myDialog").close();
+        },
+
+        onShowMessages: function (aMensajes) {
+            var oView = this.getView();
+
+            var oModel = new sap.ui.model.json.JSONModel({
+                messages: aMensajes
+            });
+
+            if (!this._pDialog) {
+                this._pDialog = sap.ui.core.Fragment.load({
+                    id: oView.getId(),
+                    name: "pluspe.z9451controlhes.view.MessageDialog",
+                    controller: this
+                }).then(function (oDialog) {
+                    oView.addDependent(oDialog);
+                    oDialog.setModel(oModel);
+                    oDialog.open();
+                    return oDialog;
+                });
+            } else {
+                this._pDialog.then(function (oDialog) {
+                    oDialog.setModel(oModel);
+                    oDialog.open();
+                });
+            }
+        },
+
+        onCloseDialog: function () {
+            this.byId("messageDialog").close();
+
+
         },
 
         onGuardarCM: function () {
@@ -424,7 +605,6 @@ sap.ui.define([
         },
 
         onContinuePress: function () {
-
             const toYYYYMMDD = function (date) {
                 if (!(date instanceof Date)) return "";
                 const year = date.getFullYear();
@@ -433,44 +613,29 @@ sap.ui.define([
                 return `${year}${month}${day}`;
             };
 
-
-
             var oView = this.getView();
-            var oModelUsuarios = this.getOwnerComponent().getModel("formData").getData();
-            //var ModelFragment = this.getView().getModel("fragmentData").getData();
+            var oGlobalModel = this.getOwnerComponent().getModel("globalModel");
+
+            if (!oGlobalModel) {
+                sap.m.MessageBox.error("No se encontró el modelo global.");
+                return;
+            }
+
+            var oGlobalData = oGlobalModel.getData();
             var oTable = oView.byId("idDetalleTable");
             var aItems = oTable.getItems();
             var aDeepEntityItems = [];
 
-
-
-
-
-
             aItems.forEach(function (oItem) {
                 var oContext = oItem.getBindingContext("itemsModel");
+                if (!oContext) return;
+
                 var oData = oContext.getObject();
-                var aCells = oItem.getCells();
-                var oCheckBox = aCells.find(cell => cell instanceof sap.m.CheckBox);
-                var oInput = aCells.find(cell => cell instanceof sap.m.Input);
+                if (!oData) return;
 
-                if (!oCheckBox || !oInput) {
-                    console.warn("No se encontraron el checkbox o el input en la fila.");
-                    return;
-                }
+                var bSelected = oData.Totalizar === "X";
+                var sInputValue = oData.ImporteNuevo?.toString().trim() || "";
 
-
-                // Leer valores de las celdas 0 a 5 (Inputs visibles)
-                var cuentaMayor = oItem.getCells()[3].mAggregations.items[1].mProperties.value;
-                var centroCoste = oItem.getCells()[4].mAggregations.items[1].mProperties.value;
-                var ordenInput = oItem.getCells()[5].mAggregations.items[1].mProperties.value;
-                var cantPorc = oItem.getCells()[6].mAggregations.items[1].mProperties.value;
-                var tipoImputacion = oItem.getCells()[7].mAggregations.items[1].mProperties.value;
-                var indDistribucion = oItem.getCells()[8].mAggregations.items[1].mProperties.value;
-
-
-                var bSelected = oCheckBox.getSelected();
-                var sInputValue = oInput.getValue().trim();
 
                 if (bSelected || sInputValue !== "") {
                     var oEntry = {
@@ -485,17 +650,19 @@ sap.ui.define([
                         NumeroPack: oData.NumeroPack,
                         Totalizar: bSelected ? "X" : "",
                         ImporteNuevo: sInputValue,
-                        Usuario: oModelUsuarios.Usuario,
-                        Ubicacion: oModelUsuarios.Ubicacion,
-                        TextoBreve: oModelUsuarios.TextoBreve,
-                        PeriodoDesde: toYYYYMMDD(oModelUsuarios.PeriodoDesde),
-                        PeriodoHasta: toYYYYMMDD(oModelUsuarios.PeriodoHasta),
-                        CuentaMayor: cuentaMayor,
-                        CentroCosteIn: centroCoste,
-                        OrdenInput: ordenInput,
-                        CantPorc: cantPorc,
-                        TipoImputacion: tipoImputacion,
-                        IndDistribucionIn: indDistribucion
+                        Usuario: oGlobalData.Usuario,
+                        Ubicacion: oGlobalData.Ubicacion,
+                        TextoBreve: oGlobalData.TextoBreve,
+                        PeriodoDesde: toYYYYMMDD(oGlobalData.PeriodoDesde),
+                        PeriodoHasta: toYYYYMMDD(oGlobalData.PeriodoHasta),
+                        CuentaMayor: oData.CuentaMayor || "",
+                        CentroCosteIn: oData.CentroCoste || "",
+                        OrdenInput: oData.OrdenInput || "",
+                        CantPorc: oData.CantPorc || "",
+                        TipoImputacion: oData.TipoImputacion || "",
+                        IndDistribucionIn: oData.IndDistribucion || "",
+                        Proyectos: oData.Proyectos || "",
+
                     };
 
                     aDeepEntityItems.push(oEntry);
@@ -503,7 +670,7 @@ sap.ui.define([
             });
 
             if (aDeepEntityItems.length === 0) {
-                MessageToast.show("No hay datos modificados para enviar.");
+                sap.m.MessageToast.show("No hay datos modificados para enviar.");
                 return;
             }
 
@@ -512,16 +679,81 @@ sap.ui.define([
                 HeaderToDetailNav: aDeepEntityItems
             };
 
+
+            var oODataModel = this.getOwnerComponent().getModel();
+
+
+            oView.setBusy(true);
+
             var oODataModel = this.getOwnerComponent().getModel();
             oODataModel.create("/HeaderSet", oCombinedData, {
-                success: function () {
-                    MessageToast.show("Datos guardados correctamente.");
-                },
-                error: function (oError) {
-                    console.error("Error al guardar los datos", oError);
-                    MessageToast.show("Error al guardar los datos.");
-                }
+                success: function (oData) {
+                    console.log("✔️ Llamada OData exitosa:", oData);
+                    oView.setBusy(false);
+
+                    var aResultados = oData?.HeaderToDetailNav?.results || [];
+
+
+                    // Construir array de mensajes
+                    var aMensajes = aResultados.map(function (item) {
+                        var sType;
+
+                        switch (item.TipoMensaje) {
+                            case "E": sType = "Error"; break;
+                            case "S": sType = "Success"; break;
+                            case "W": sType = "Warning"; break;
+                            case "I": sType = "Information"; break;
+                            default: sType = "None"; break;
+                        }
+
+                        return {
+                            title: item.Mensaje,
+                            type: sType
+                        };
+                    });
+                    // Si no hay mensajes, no mostrar nada
+                    if (aMensajes.length === 0) {
+                        return;
+                    }
+
+                    // Crear modelo de mensajes
+                    var oMessageModel = new sap.ui.model.json.JSONModel({ messages: aMensajes });
+
+                    // Setear el modelo en la vista
+                    oView.setModel(oMessageModel, "messageModel");
+
+                    // Mostrar el fragmento
+                    if (!this._oMessageDialog) {
+                        Fragment.load({
+                            name: "pluspe.z9451controlhes.view.MessageDialog", // ajustá si el path es otro
+                            controller: this
+                        }).then(function (oDialog) {
+                            this._oMessageDialog = oDialog;
+                            oView.addDependent(oDialog);
+                            oDialog.setModel(oMessageModel, "messageModel");
+                            oDialog.open();
+                        }.bind(this));
+                    } else {
+                        this._oMessageDialog.setModel(oMessageModel, "messageModel");
+                        this._oMessageDialog.open();
+                    }
+
+                }.bind(this), // ¡¡IMPORTANTE!!
+
+                error: function () {
+                    this.getView().setBusy(false);
+                    sap.m.MessageBox.error("Error al enviar los datos");
+                }.bind(this) // también importante
             });
-        }
+
+        },
+          onCloseDialog: function () {
+      if (this._oMessageDialog) {
+        this._oMessageDialog.close();
+      }
+    }
+
+
+
     });
 });
