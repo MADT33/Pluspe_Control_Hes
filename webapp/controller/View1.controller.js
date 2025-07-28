@@ -13,6 +13,7 @@ sap.ui.define([
     onInit: function () {
 
 
+
       this.byId("contratoTable").attachUpdateFinished(this.onAfterRendering, this);
 
       var oOrdenModel = new JSONModel({
@@ -49,59 +50,57 @@ sap.ui.define([
       this._validateInput(oInput);
     },
 
-    onInputChange: function (oEvent) {
-      var oInput = oEvent.getSource();
-      var oTable = this.getView().byId("contratoTable");
-      var oItem = oInput.getParent().getParent();
+onInputChange: function (oEvent) {
+    var oInput = oEvent.getSource();
+    var oTable = this.getView().byId("contratoTable");
+    var oItem = oInput.getParent().getParent();
+    var oContext = oItem.getBindingContext("contratoModel");
+    if (!oContext) return;
 
+    var sPath = oContext.getPath();
+    var oModel = this.getView().getModel("contratoModel");
+    var oData = oModel.getProperty(sPath);
+    if (!oData) return;
 
-      var oContext = oItem.getBindingContext("contratoModel");
-      if (!oContext) return;
-
-      var sPath = oContext.getPath();
-      var oModel = this.getView().getModel("contratoModel");
-      var oData = oModel.getProperty(sPath);
-      if (!oData) return;
-
-
-      var sColorActual = oModel.getProperty(sPath + "/ColorClase");
-      if (!sColorActual || sColorActual.trim() === "") {
+    // ✅ NO tocar el color si ya hay uno definido
+    if (!oData.ColorClase || oData.ColorClase.trim() === "") {
         oModel.setProperty(sPath + "/ColorClase", "filaBlanca");
-      }
-      var aCells = oItem.getCells();
-      var bEsOriginal = oData.EsOriginal === true;
-      var sTipoImput = oData.InTipoImput;
+    }
 
+    var aCells = oItem.getCells();
+    var bEsOriginal = oData.EsOriginal === true;
+    var sTipoImput = oData.InTipoImput;
+    var mostrarInputs = sTipoImput === "U" && !oData.EsClon;
 
-      var mostrarInputs = sTipoImput === "U";
-
-
-      for (var i = 0; i <= 6; i++) {
+    // Mostrar u ocultar los inputs ocultos en las primeras columnas
+    for (var i = 0; i <= 6; i++) {
         var oVBox = aCells[i];
         var oHiddenInput = oVBox.getItems()[1];
         if (oHiddenInput instanceof sap.m.Input) {
-          oHiddenInput.setVisible(mostrarInputs);
+            oHiddenInput.setVisible(mostrarInputs);
         }
         if (oVBox.getItems()[0] && oVBox.getItems()[0].setVisible) {
-          oVBox.getItems()[0].setVisible(true);
+            oVBox.getItems()[0].setVisible(true);
         }
-      }
-
-
-      var oHBoxBotones = aCells[8];
-      var aBotones = oHBoxBotones.getItems();
-      aBotones.forEach(function (oBoton) {
-        oBoton.setVisible(mostrarInputs && bEsOriginal);
-      });
-
-      // Columna de acción visible solo si corresponde
-      var oColAccion = this.getView().byId("colAccion");
-      oColAccion.setVisible(mostrarInputs && bEsOriginal);
-
-      // Habilitar botón "Guardar" si hay texto
-      var bEnableGuardar = oInput.getValue().trim() !== "";
-      this.getView().byId("toggleButton2").setEnabled(bEnableGuardar);
     }
+
+    // ✅ Actualizar la propiedad MostrarBotones en el modelo (solo para esta fila)
+    var mostrarBotones = mostrarInputs && bEsOriginal;
+    //oModel.setProperty(sPath + "/MostrarBotones", mostrarBotones);
+    const iIndex = oContext.getPath().split("/").pop(); // último número del path
+    oModel.setProperty("/ContratoDetalle/" + iIndex + "/MostrarBotones", mostrarBotones);
+
+    // Columna entera visible si corresponde (esto es general)
+    var oColAccion = this.getView().byId("colAccion");
+    oColAccion.setVisible(mostrarBotones);
+
+    // Habilitar botón de guardar si se completó el campo
+    var bEnableGuardar = oInput.getValue().trim() !== "";
+    this.getView().byId("toggleButton2").setEnabled(bEnableGuardar);
+}
+
+
+
 
     ,
     onFechaHastaChange: function (oEvent) {
@@ -209,48 +208,80 @@ sap.ui.define([
       var oButton = oEvent.getSource();
       var oContext = oButton.getBindingContext("contratoModel");
 
-      if (oContext) {
-        var sPath = oContext.getPath();
-        var oModel = oContext.getModel();
-        var oOriginalData = oModel.getProperty(sPath);
+      if (!oContext) return;
 
+      var sPath = oContext.getPath();
+      var oModel = oContext.getModel();
+      var oOriginalData = oModel.getProperty(sPath);
 
-        var oClonedData = JSON.parse(JSON.stringify(oOriginalData));
+      var oClonedData = JSON.parse(JSON.stringify(oOriginalData));
 
+      // Limpieza de campos
+      oClonedData.CuentaMayor = "";
+      oClonedData.CentroCoste = "";
+      oClonedData.Orden = "";
+      oClonedData.TipoImputacion = "";
+      oClonedData.IndDistribucion = "";
+      oClonedData.CantPorc = "";
+      oClonedData.ImporteNuevo = "";
+      oClonedData.Proyectos = "";
 
-        oClonedData.CuentaMayor = "";
-        oClonedData.CentroCoste = "";
-        oClonedData.Orden = "";
-        oClonedData.TipoImputacion = "";
-        oClonedData.IndDistribucion = "";
-        oClonedData.CantPorc = "";
-        oClonedData.ImporteNuevo = "";
-        oClonedData.Proyectos = "";
+      oClonedData.EsOriginal = false;
+      oClonedData.EsClon = true;
 
-
-        oClonedData.EsOriginal = false;
-        oClonedData.CuentaMayorVisible = true;
-        oClonedData.CentroCostoVisible = true;
-        oClonedData.OrdenVisible = true;
-        oClonedData.TipoImputacionVisible = true;
-        oClonedData.IndicadorDistribucionVisible = true;
-        oClonedData.CantidadPorcentajeVisible = true;
-
-
-        var aPathParts = sPath.split("/");
-        var iIndex = parseInt(aPathParts[aPathParts.length - 1], 10);
-        var aData = oModel.getProperty("/ContratoDetalle");
-
-
-        var aNewData = aData.slice();
-        aNewData.splice(iIndex + 1, 0, oClonedData);
-        oModel.setProperty("/ContratoDetalle", aNewData);
-
-
-        var oTable = this.byId("contratoTable");
-        oTable.getBinding("items").refresh(true);
+      // ID único
+      if (!oOriginalData.IdOriginal) {
+        oOriginalData.IdOriginal = Date.now().toString() + Math.random().toString(36).substr(2, 6);
+        oModel.setProperty(sPath + "/IdOriginal", oOriginalData.IdOriginal);
       }
+      oClonedData.IdOriginal = oOriginalData.IdOriginal;
+
+      // ID único del nuevo ítem
+      oClonedData.ClonId = Date.now().toString() + Math.random().toString(36).substr(2, 6);
+
+      // Visibilidad
+      oClonedData.CuentaMayorVisible = true;
+      oClonedData.CentroCostoVisible = true;
+      oClonedData.OrdenVisible = true;
+      oClonedData.TipoImputacionVisible = false;
+      oClonedData.IndicadorDistribucionVisible = false;
+      oClonedData.CantidadPorcentajeVisible = true;
+
+      oClonedData.MostrarBotones = false;
+
+      // Insertar el clon directamente
+      var aPathParts = sPath.split("/");
+      var iIndex = parseInt(aPathParts[aPathParts.length - 1], 10);
+      var aData = oModel.getProperty("/ContratoDetalle");
+
+      aData.splice(iIndex + 1, 0, oClonedData);
+      oModel.setProperty("/ContratoDetalle", aData); // sólo si necesitás actualizar completamente
+
+      // Mejor aún: actualizar solo el ítem clonado
+      // oModel.setProperty("/ContratoDetalle/" + (iIndex + 1), oClonedData);
+
+      this.byId("contratoTable").getBinding("items").refresh(true);
+
+      // Esperar a que se re-renderice la tabla y los clones
+      setTimeout(() => {
+        const aItems = this.byId("contratoTable").getItems();
+        aItems.forEach(item => {
+          const oClonId = item.getBindingContext("contratoModel").getProperty("ClonId");
+          const bEsClon = item.getBindingContext("contratoModel").getProperty("EsClon");
+
+          if (bEsClon && oClonId) {
+            const oInput = item.getCells().find(cell => cell.data("ClonId") === oClonId);
+            if (oInput) {
+              oInput.addStyleClass("mm");
+            }
+          }
+        });
+      }, 1000);
+
+
+
     }
+
     ,
     //////////////////////// cebra/////////////////////////////////////////////////////
 
@@ -258,34 +289,36 @@ sap.ui.define([
       this._ultimoColor = this._ultimoColor === "filaGris" ? "filaBlanca" : "filaGris";
       return this._ultimoColor;
     },
-    onAfterRendering: function () {
-      var oTable = this.byId("contratoTable");
-      var aItems = oTable.getItems();
-
-      aItems.forEach(function (oItem) {
-        var sClase = oItem.data("colorClase");
-        if (sClase) {
-          oItem.$().addClass(sClase);
-        }
-      });
-    },
 
 
 
 
     onAccionPress2: function (oEvent) {
-      var oModel = this.getView().getModel("contratoModel");
-      var aData = oModel.getProperty("/ContratoDetalle");
+      var oButton = oEvent.getSource();
+      var oContext = oButton.getBindingContext("contratoModel");
 
+      if (!oContext) {
+        return;
+      }
+
+      var sPathOriginal = oContext.getPath();
+      var oModel = oContext.getModel();
+      var aData = oModel.getProperty("/ContratoDetalle");
+      var oOriginalData = oModel.getProperty(sPathOriginal);
+      var sIdOriginal = oOriginalData.IdOriginal;
+
+      if (!sIdOriginal) {
+        sap.m.MessageToast.show("IdOriginal no definido para esta fila.");
+        return;
+      }
 
       var iLastClonIndex = -1;
       for (var i = aData.length - 1; i >= 0; i--) {
-        if (!aData[i].EsOriginal) {
+        if (aData[i].EsClon === true && aData[i].IdOriginal === sIdOriginal) {
           iLastClonIndex = i;
           break;
         }
       }
-
 
       if (iLastClonIndex === -1) {
         sap.m.MessageToast.show("No hay clones para eliminar.");
@@ -298,6 +331,18 @@ sap.ui.define([
     }
 
     ,
+
+    onAfterRendering: function () {
+      var oTable = this.byId("contratoTable");
+      var aItems = oTable.getItems();
+
+      aItems.forEach(function (oItem) {
+        var sClase = oItem.data("colorClase");
+        if (sClase) {
+          oItem.$().addClass(sClase);
+        }
+      });
+    },
 
     _updateVisibleInputsForRow: function (iRowIndex) {
       var oTable = this.byId("contratoTable");
@@ -424,7 +469,7 @@ sap.ui.define([
             oData.results.forEach(function (item) {
               item.EsOriginal = true;
 
-
+              item.MostrarBotones = false;
               item.CuentaMayorVisible = false;
               item.CentroCostoVisible = false;
               item.OrdenVisible = false;

@@ -2,7 +2,11 @@
 
 
 .inputBelowText {
-  margin-top: 19px; /* ajusta el espacio que quieras */
+  margin-top: 17px !important; /* ajusta el espacio que quieras */
+}
+
+.inputBelowText2 {
+  margin-top: 50px !important; /* ajusta el espacio que quieras */
 }
 
 .inputDisabledCustom {
@@ -27,4 +31,23 @@
 
 .inputWithTopMargin {
     margin-top: 2rem; /* Ajustá el valor a gusto */
+}
+
+.customVHMargin {
+  margin-top: 1.5rem; /* ajustá según necesidad */
+}
+
+.claseInputClon {
+  background-color: #f5f5f5; /* color más claro */
+  border: 1px solid #aaa;
+  font-weight: bold;
+}
+
+.inputNewMargin {
+  margin-top: 19px !important;
+  background-color: #3e3c3c !important; /* ajusta el espacio que quieras */
+}
+
+.inputClonMargin {
+  margin-top: 1.5rem; /* Ajustá el valor según lo que necesites */
 }

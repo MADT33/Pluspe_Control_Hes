@@ -19,7 +19,7 @@ sap.ui.define([
 
                         // Cargar tu CSS
             sap.ui.getCore().loadLibrary("sap.ui.core");
-            jQuery.sap.includeStyleSheet("css/style.css");
+           jQuery.sap.includeStyleSheet(jQuery.sap.getModulePath("pluspe.z9451controlhes") + "/css/style.css");
 
             // set the device model
             this.setModel(models.createDeviceModel(), "device");

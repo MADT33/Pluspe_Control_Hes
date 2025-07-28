@@ -1,6 +1,7 @@
 <mvc:View
     controllerName="pluspe.z9451controlhes.controller.Detalle"
     xmlns:mvc="sap.ui.core.mvc"
+     xmlns:core="sap.ui.core"
     xmlns="sap.m"
     height="100%">
 
@@ -39,11 +40,11 @@
                             <VBox id="idCuentaMayorBox">
                             <Text text="{itemsModel>OrdenPosicion}"/>
                              <Input 
-                                 class="inputBelowText sapUiLargeMarginTop"  
+                                 class="sapUiLargeMarginTop"  
                                 visible="{itemsModel>MostrarInputs}"  
                                
                                 placeholder="Cuenta Mayor" 
-                                value="{itemsModel>CuentaMayor}"
+                                value="{path: 'itemsModel>CuentaMayor', mode: 'TwoWay'}"
                                 showValueHelp="true"
                                 liveChange=".onImputacionChange"
                                 valueHelpRequest=".onValueHelpCuentaMayor"
@@ -57,9 +58,9 @@
                                
                                  visible="{itemsModel>MostrarInputs}"  
                                 placeholder="Centro de Coste" 
-                                 class="inputBelowText sapUiLargeMarginTop"  
-                                width="100%" 
-                                value="{itemsModel>CentroCoste}"
+                                 class="sapUiLargeMarginTop"  
+                                width="100%"                               
+                                 value="{path: 'itemsModel>CentroCoste', mode: 'TwoWay'}"
                                 liveChange=".onCentroCosteChange"
                                 change=".onCentroCosteChange"
                                 showValueHelp="true"
@@ -67,28 +68,39 @@
                                 </VBox>
 
 
-                                   <!-- Orden -->
-                            <VBox id="idOrdenBox">
-                            <Text text="{itemsModel>NumeroPack}"/>
-                            <Input 
-                         
-                             visible="{itemsModel>MostrarInputs}"  
-                            placeholder="Orden" 
-                            class="inputBelowText sapUiSmallMarginTop"  
-                            width="100%" 
-                            value="{itemsModel>OrdenInput}" 
-                            liveChange=".onOrdenChange"
-                            change=".onOrdenChange"/>
-                            </VBox>
-                              
+                            <!-- Orden -->
+                           <VBox id="idOrdenBox">
+  <VBox>
+    <Text 
+      text="{= ${itemsModel>EsClon} ? '\u00A0' : ${itemsModel>NumeroPack} }" 
+      class="ordenTextPlaceholder"
+    />
+  </VBox>
+                <VBox id="idVBox">
+                    <Input 
+                    id="InOrden"
+                    visible="{itemsModel>MostrarInputs}"  
+                    placeholder="Orden"                            
+                    class="inputBelowText sapUiMediumMarginTop"  
+                    width="100%"                           
+                    value="{path: 'itemsModel>OrdenInput', mode: 'TwoWay'}"
+                    liveChange=".onOrdenChange"
+                    change=".onOrdenChange">
+                    <customData>
+                        <core:CustomData key="rowId" value="{itemsModel>ClonId}" />
+                    </customData>
+                    </Input>
+                </VBox>
+                </VBox>
+                                            
                             <!-- Cant/Porc -->
                              <VBox id="idCanPorcBox">
                             <Text text="{itemsModel>Valor}"/>
                              <Input 
-                                  class="inputBelowText sapUiLargeMarginTop"  
+                                  class="sapUiLargeMarginTop"  
                                  visible="{itemsModel>MostrarInputs}"  
-                                placeholder="Cant/Porc"
-                                value="{itemsModel>CantPorc}" 
+                                placeholder="Cant/Porc"                              
+                                value="{path: 'itemsModel>CantPorc', mode: 'TwoWay'}"
                                 width="100%" 
                                 liveChange=".onImputacionChange"/>
                             </VBox>
@@ -100,11 +112,11 @@
                             <Text text="{itemsModel>Usado}"/>
                              <Input 
                                 
-                                visible="{itemsModel>MostrarInputs}"   
+                                visible="{= !${itemsModel>OcultarValueHelps} }" 
                                 placeholder="Tipo Imputación" 
-                               class="inputBelowText sapUiLargeMarginTop"  
-                                width="100%"
-                                value="{itemsModel>TipoImputacion}"
+                               class="sapUiLargeMarginTop"  
+                                width="100%"                      
+                                 value="{path: 'itemsModel>TipoImputacion', mode: 'TwoWay'}"
                                 showValueHelp="true"
                                 liveChange=".onImputacionChange"
                                 valueHelpRequest=".onValueHelpTipoImputacion" />
@@ -116,10 +128,10 @@
                             <Text text="{itemsModel>Saldo}"/>
                             <Input 
                            
-                            visible="{itemsModel>MostrarInputs}"   
+                            visible="{= !${itemsModel>OcultarValueHelps} }"
                             placeholder="Ind. Distribución" 
-                            class="inputBelowText sapUiLargeMarginTop"  
-                            value="{itemsModel>IndDistribucion}"
+                            class="sapUiLargeMarginTop"                     
+                             value="{path: 'itemsModel>IndDistribucion', mode: 'TwoWay'}"
                             showValueHelp="true"
                             liveChange=".onImputacionChange"
                             valueHelpRequest=".onValueHelpDistribucion"
@@ -132,11 +144,12 @@
                                 id="check1"
                                 selected="{itemsModel>Totalizar}" 
                                 select="onCheckboxSelect"
-                                visible="{= !${itemsModel>EsClon} }"/>
+                                visible="{= !${itemsModel>EsClon} }"
+                                />
                               
                         <Input 
                          id="idProyectosInput"
-                       visible="{itemsModel>MostrarInputs}"
+                       visible="{= !${itemsModel>OcultarValueHelps} }"
                         placeholder="Proyecto"
                         class="inputBelowText"
                         value="{path: 'itemsModel>Proyectos', mode: 'TwoWay'}"

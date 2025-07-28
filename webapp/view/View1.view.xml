@@ -153,6 +153,7 @@
     id="contratoTable"
     items="{contratoModel>/ContratoDetalle}"
     class="sapUiResponsiveMargin"
+    
     inset="false"
     width="auto">
 
@@ -183,7 +184,7 @@
                     <Input 
                         id="idCuentaMayorInput"
                         visible="{= !${contratoModel>EsOriginal} }"
-                        class="inputBelowText"  
+                        class="inputBelowText sapUiMediumMarginTop" 
                         placeholder="Cuenta Mayor" 
                         value="{path: 'contratoModel>CuentaMayor', mode: 'TwoWay'}"
                         showValueHelp="true"
@@ -201,7 +202,7 @@
                         id="idCentroCosteInput"  
                         visible="{= !${contratoModel>EsOriginal} }"
                         placeholder="Centro de Coste" 
-                        class="inputBelowText" 
+                        class="inputBelowText sapUiMediumMarginTop" 
                         width="100%" 
                         value="{path: 'contratoModel>CentroCoste', mode: 'TwoWay'}"
                         liveChange=".onCentroCosteChange"
@@ -219,7 +220,7 @@
                         id="idOrdenInput" 
                         visible="{= !${contratoModel>EsOriginal} }"
                         placeholder="Orden" 
-                        class="inputBelowText"  
+                        class="inputBelowText sapUiMediumMarginTop"  
                         width="100%" 
                         value="{path: 'contratoModel>Orden', mode: 'TwoWay'}"
                         liveChange=".onOrdenChange"
@@ -231,13 +232,18 @@
                     <Text id="idDescripcionText" 
                           text="{contratoModel>Descripcion}"
                           visible="{= ${contratoModel>EsOriginal} === true }" />
-                    <Input 
-                        id="idCanPorcInput" 
-                        visible="{= !${contratoModel>EsOriginal} }"
-                        placeholder="Cant/Porc"
-                        value="{path: 'contratoModel>CantPorc', mode: 'TwoWay'}"
-                        width="100%" 
-                        liveChange=".onImputacionChange"/>
+                   <Input 
+                    id="idCanPorcInput" 
+                    visible="{= !${contratoModel>EsOriginal} }"
+                    placeholder="Cant/Porc"
+                    value="{path: 'contratoModel>CantPorc', mode: 'TwoWay'}"
+                    width="100%" 
+                    class="inputBelowText"
+                    liveChange=".onImputacionChange">
+                    <customData>
+                        <core:CustomData key="ClonId" value="{contratoModel>ClonId}" />
+                    </customData>
+                    </Input>
                 </VBox>
 
                 <!-- Tipo Imputacion -->
@@ -247,9 +253,9 @@
                           visible="{= ${contratoModel>EsOriginal} === true }" />
                     <Input 
                         id="idTipoImputacionInput"
-                        visible="{= !${contratoModel>EsOriginal} }"
+                        visible="{contratoModel>TipoImputacionVisible}"
                         placeholder="Tipo Imputación" 
-                        class="inputBelowText" 
+                        class="inputBelowText sapUiMediumMarginTop" 
                         width="100%"
                         value="{path: 'contratoModel>TipoImputacion', mode: 'TwoWay'}"
                         showValueHelp="true"
@@ -264,9 +270,9 @@
                           visible="{= ${contratoModel>EsOriginal} === true }" />
                     <Input 
                         id="idIndDistribucionInput"  
-                        visible="{= !${contratoModel>EsOriginal} }"
+                         visible="{contratoModel>IndicadorDistribucionVisible}"
                         placeholder="Ind. Distribución" 
-                        class="inputBelowText" 
+                        class="inputBelowText sapUiMediumMarginTop" 
                         value="{path: 'contratoModel>IndDistribucion', mode: 'TwoWay'}"
                         showValueHelp="true"
                         liveChange=".onImputacionChange"
@@ -282,7 +288,7 @@
                         id="idProyectosInput"
                         visible="{= !${contratoModel>EsOriginal} }"
                         placeholder="Proyecto"
-                        class="inputBelowText"
+                        class="inputBelowText sapUiMediumMarginTop"
                         value="{path: 'contratoModel>Proyectos', mode: 'TwoWay'}"
                         showValueHelp="true"
                         liveChange=".onImputacionChange"
@@ -305,20 +311,20 @@
                 <!-- Botones -->
                 <HBox>
                     <Button
-                        id="idAccionButton"
-                        visible="false"
-                        icon="sap-icon://add"
-                        type="Neutral"
-                        width="0.5rem"
-                        press="onAccionPress" />
+                    id="idAccionButton"
+                    visible="{contratoModel>MostrarBotones}"
+                    icon="sap-icon://add"
+                    type="Neutral"
+                    width="0.5rem"
+                    press="onAccionPress" />
 
-                    <Button
-                        id="idAccionButton2"
-                        visible="false"
-                        icon="sap-icon://less"
-                        type="Neutral"
-                        width="0.5rem"
-                        press=".onAccionPress2" />
+                <Button
+                    id="idAccionButton2"
+                    visible="{contratoModel>MostrarBotones}"
+                    icon="sap-icon://less"
+                    type="Neutral"
+                    width="0.5rem"
+                    press=".onAccionPress2" />
                 </HBox> 
             </cells>
         </ColumnListItem>
